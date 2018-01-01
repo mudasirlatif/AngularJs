@@ -7,5 +7,5 @@ export class Dish {
     label: string;
     price: string;
     description: string;
-    comment : comments[];
+    comments : Comment[];
 }
