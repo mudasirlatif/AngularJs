@@ -26,7 +26,9 @@
 </div>
 
   </div>
-
+<div [hidden]="dish">
+    <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
+  </div>
   <div fxFlex="60" *ngIf="dish" style="text-align: left">
    
   <h2 mat-line>Comments</h2>
@@ -44,5 +46,7 @@
          <button mat-button (click)="goBack()">BACK</button></mat-card-actions>
 </div>
   </div>
-
+<div [hidden]="dish">
+    <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
+  </div>
 </div>

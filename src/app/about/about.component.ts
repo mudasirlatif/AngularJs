@@ -14,7 +14,7 @@ leaders: Leader[];
   constructor(private leaderservice: LeaderService) { }
 
   ngOnInit() {
-  this.leaders=this.leaderservice.getleaders();
+  this.leaderservice.getleaders().then(leaders => this.leaders = leaders);
   }
 
 }
