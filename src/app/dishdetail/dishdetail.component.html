@@ -19,8 +19,11 @@
 		<p>{{dish.description}}</p>
 	</mat-card-content>
 	<mat-card-actions>
+    <button mat-button [routerLink]="['/dishdetail', prev]"><span class="fa fa-chevron-left fa-lg"></span></button>
+    <button mat-button (click)="goBack()">BACK</button>
 		<button mat-button>LIKE</button>
 		<button mat-button>SHARE</button>
+    <button mat-button [routerLink]="['/dishdetail', next]"><span class="fa fa-chevron-right fa-lg"></span></button>
 	</mat-card-actions>
 	</mat-card>
 </div>
@@ -29,24 +32,62 @@
 <div [hidden]="dish">
     <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
   </div>
-  <div fxFlex="60" *ngIf="dish" style="text-align: left">
+  <div fxFlex="50" *ngIf="dish" >
    
   <h2 mat-line>Comments</h2>
-   <div class="container" fxLayout="column" fxLayoutGap="10px">
+  <div class="container" fxLayout="column" fxLayoutGap="10px">
       <mat-list fxFlex>
         <mat-list-item *ngFor="let comment of dish.comments">
           <p mat-line> {{comment.comment}} </p>
           <p mat-line> {{comment.rating}} Stars </p>
           <p mat-line> <span>-- </span>{{comment.author}} {{comment.date | date}} </p>
         </mat-list-item>
+       <mat-list-item *ngIf="contactform.valid">
+        <p mat-line>{{getcomment.comment}}</p>
+        <p mat-line>{{getcomment.rating}} stars</p>
+        <p mat-line>-- {{getcomment.author}}</p>
+      </mat-list-item>
+    <mat-list-item>
+          <p mat-line> {{ contactform.get('comment').value }} </p>
+          <p mat-line> {{ contactform.get('rating').value }} Stars</p>
+          <p mat-line> <span>-- </span>{{ contactform.get('author').value }} </p>
+        </mat-list-item>
       </mat-list>
+
+       
     </div>
-<div style="text-align: center;">
-   <mat-card-actions >
-         <button mat-button (click)="goBack()">BACK</button></mat-card-actions>
-</div>
+      <div class="container" fxLayout="column" fxLayoutGap="10px">
+
+    <form novalidate [formGroup]="contactform" (ngSubmit)="onSubmit()" class="full-width">
+          <p>
+            <mat-input-container class="full-width"
+             dividerColor="{{(formErrors.author) ? 'warn' : 'primary'}}">
+              <input matInput formControlName="author" placeholder="Author Name" type="text" required>
+              <mat-hint>
+                <span [hidden]="!(formErrors.author)">
+                  {{formErrors.author}}</span>
+              </mat-hint>
+            </mat-input-container>
+          </p>
+          <table class="form-size">
+            <td>
+            <mat-slider thumbLabel step="1" tickInterval="1" min="1" max="5" value="5" formControlName="rating"></mat-slider>
+            </td>
+            </table>
+          <p>
+            <mat-input-container class="full-width"   dividerColor="{{(formErrors.comment) ? 'warn' : 'primary'}}">
+              <textarea matInput formControlName="comment" placeholder="Your Feedback" rows=12></textarea>
+               <mat-hint>
+                <span [hidden]="!(formErrors.comment)">
+                  {{formErrors.comment}}</span>
+              </mat-hint>
+            </mat-input-container>
+          </p>
+          <button type="submit" mat-button class="background-primary text-floral-white" [disabled]="contactform.invalid">Submit</button>
+        </form>
+      </div>
   </div>
-<div [hidden]="dish">
+  <div [hidden]="dish">
     <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
   </div>
 </div>
