@@ -6,8 +6,8 @@ import { Location } from '@angular/common';
 import 'rxjs/add/operator/switchMap';
 import { Comment } from '../shared/comment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Comment } from '../shared/comment';
-import { visibility, flyInOut, expand } from '../animations/app.animation';
+import { visibility } from '../animations/app.animation';
+import { flyInOut, expand } from '../animations/app.animation';
 
 @Component({
   selector: 'app-dishdetail',
@@ -35,6 +35,7 @@ dishIds: number[];
 prev: number;
 next: number;
 errMess: string;
+visibility = 'shown';
 formErrors = {
     'author': '',
     'comment': ''
