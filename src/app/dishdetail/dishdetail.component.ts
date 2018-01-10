@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, Inject} from '@angular/core';
 import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 import { Params, ActivatedRoute } from '@angular/router';
@@ -6,20 +6,35 @@ import { Location } from '@angular/common';
 import 'rxjs/add/operator/switchMap';
 import { Comment } from '../shared/comment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Comment } from '../shared/comment';
+import { visibility, flyInOut, expand } from '../animations/app.animation';
 
 @Component({
   selector: 'app-dishdetail',
   templateUrl: './dishdetail.component.html',
-  styleUrls: ['./dishdetail.component.scss']
+  styleUrls: ['./dishdetail.component.scss'],
+   host: {
+  '[@flyInOut]': 'true',
+  'style': 'display: block;'
+  },
+  animations: [
+    flyInOut(),
+    visibility(),
+    expand()
+  ]
+ 
 })
 export class DishdetailComponent implements OnInit {
 contactform: FormGroup;
 getcomment: Comment;
+
 dish:Dish;
+dishcopy= null;
+
 dishIds: number[];
 prev: number;
 next: number;
-
+errMess: string;
 formErrors = {
     'author': '',
     'comment': ''
@@ -37,13 +52,14 @@ formErrors = {
 
   constructor(private dishservice: DishService,
     private route: ActivatedRoute,
-    private location: Location, private fbb: FormBuilder) { this.createForm();}
+    private location: Location, private fbb: FormBuilder, @Inject('BaseURL') private BaseURL) { this.createForm();}
 
   ngOnInit() {
-     this.dishservice.getDishIds().subscribe(dishIds=> this.dishIds=dishIds);
-     this.route.params
-    .switchMap((params: Params)=> this.dishservice.getDish(+params['id']))
-    .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id)});
+     this.dishservice.getDishIds().subscribe(dishIds=> this.dishIds=dishIds, errmess => this.errMess = <any>errmess);
+       this.route.params
+      .switchMap((params: Params) => { this.visibility = 'hidden'; return this.dishservice.getDish(+params['id']); })
+      .subscribe(dish => { this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id); this.visibility = 'shown'; },
+          errmess => { this.dish = null; this.errMess = <any>errmess; });
   }
 
   createForm() {
@@ -88,7 +104,9 @@ setPrevNext(dishIds: number)
   onSubmit()
   {
   this.getcomment.date = new Date().toString();
-        this.dish.comments.push(this.getcomment);
+        this.dishcopy.comments.push(this.getcomment);
+        this.dishcopy.save()
+      .subscribe(dish => { this.dish = dish; console.log(this.dish); });
      this.getcomment     = this.contactform.value;
     console.log(this.getcomment);
     this.contactform.reset({

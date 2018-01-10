@@ -7,14 +7,14 @@
      fxLayoutGap.xs="0">
 
   <div fxFlex="40">
-   <div fxFlex *ngIf="dish">
+   <div fxFlex *ngIf="dish" [@visibility]="visibility" [@expand]>
 <mat-card>
 	<mat-card-header>
 		<mat-card-title>
           <h3 >{{dish.name | uppercase}}</h3>
 		</mat-card-title>
 	</mat-card-header>
-	<img mat-card-image src="{{dish.image}}" alt="{{dish.name}}">
+	<img mat-card-image src="{{BaseURL + dish.image}}" alt="{{dish.name}}">
 	<mat-card-content>
 		<p>{{dish.description}}</p>
 	</mat-card-content>
@@ -29,10 +29,15 @@
 </div>
 
   </div>
-<div [hidden]="dish">
+<div [hidden]="dish || errMess" style="text-align: center;">
     <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
+
   </div>
-  <div fxFlex="50" *ngIf="dish" >
+   <div *ngIf="errMess">
+    <h2>Error</h2>
+    <h4>{{errMess}}</h4>
+  </div>
+  <div fxFlex="50" *ngIf="dish" [@visibility]="visibility" [@expand]>
    
   <h2 mat-line>Comments</h2>
   <div class="container" fxLayout="column" fxLayoutGap="10px">
@@ -42,11 +47,7 @@
           <p mat-line> {{comment.rating}} Stars </p>
           <p mat-line> <span>-- </span>{{comment.author}} {{comment.date | date}} </p>
         </mat-list-item>
-       <mat-list-item *ngIf="contactform.valid">
-        <p mat-line>{{getcomment.comment}}</p>
-        <p mat-line>{{getcomment.rating}} stars</p>
-        <p mat-line>-- {{getcomment.author}}</p>
-      </mat-list-item>
+     
     <mat-list-item>
           <p mat-line> {{ contactform.get('comment').value }} </p>
           <p mat-line> {{ contactform.get('rating').value }} Stars</p>
@@ -87,7 +88,5 @@
         </form>
       </div>
   </div>
-  <div [hidden]="dish">
-    <mat-spinner></mat-spinner><h4>Loading . . . Please Wait</h4>
-  </div>
+  
 </div>
