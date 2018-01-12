@@ -38,9 +38,12 @@
       
             <div fxFlex fxFlexOffset="20px" class="form-size">
         <h3>Send us your Feedback</h3>
-        <p>{{ feedbackForm.value | json }} {{ feedbackForm.status | json }}</p>
+        <div *ngIf="errMess">
+      <h2>Error - Unable to submit Feedback</h2>
+      <h4>{{errMess}}</h4>
+    </div>
 
-       <form novalidate [formGroup]="feedbackForm" (ngSubmit)="onSubmit()">
+       <form novalidate [formGroup]="feedbackForm" (ngSubmit)="onSubmit()" *ngIf="showFeedbackform" [@expand]>
           <p>
             <mat-input-container class="half-width"
              dividerColor="{{(formErrors.firstname) ? 'warn' : 'primary'}}">
@@ -96,5 +99,20 @@
           </p>
           <button type="submit" mat-button class="background-primary text-floral-white" [disabled]="feedbackForm.invalid">Submit</button>
         </form>
+        <div *ngIf="formSubmitting">
+        <mat-spinner></mat-spinner><h4>Submitting Feedback... Please Wait</h4>
+      </div>
+      <div mat-list *ngIf="submittedFeedback" [@expand]>
+        <h3>Your Submission</h3>
+        <mat-list-item>
+          <p mat-line>First Name: {{submittedFeedback.firstname}}</p>
+          <p mat-line>Last Name: {{submittedFeedback.lastname}}</p>
+          <p mat-line>Tel. Number: {{submittedFeedback.telnum}}</p>
+          <p mat-line>Email: {{submittedFeedback.email}}</p>
+          <p mat-line>Contact You?: {{submittedFeedback.agree}}</p>
+          <p mat-line>How?: {{submittedFeedback.contacttype}}</p>
+          <p mat-line>Feedback: {{submittedFeedback.message}}</p>
+        </mat-list-item>
+      </div>
       </div>
 </div>

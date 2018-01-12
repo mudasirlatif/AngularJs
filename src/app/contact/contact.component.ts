@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
-import { flyInOut } from '../animations/app.animation';
+import { flyInOut, expand  } from '../animations/app.animation';
+import { FeedbackService } from '../services/feedback.service';
 
 @Component({
   selector: 'app-contact',
@@ -12,7 +13,8 @@ import { flyInOut } from '../animations/app.animation';
   'style': 'display: block;'
   },
   animations: [
-    flyInOut()
+    flyInOut(),
+    expand()
   ]
 })
 export class ContactComponent implements OnInit {
@@ -20,6 +22,10 @@ export class ContactComponent implements OnInit {
   feedbackForm: FormGroup;
   feedback: Feedback;
   contactType = ContactType;
+  formSubmitting: boolean;
+  showFeedbackform: boolean;
+   submittedFeedback: Feedback;
+  errMess: string;
 
 formErrors = {
     'firstname': '',
@@ -47,11 +53,15 @@ formErrors = {
       'email':         'Email not in valid format.'
     },
   };
-  constructor(private fb: FormBuilder) { 
+  constructor(private fb: FormBuilder, private feedbackService: FeedbackService,
+    @Inject('BaseURL') private BaseURL
+  ) { 
    this.createForm();
+
   }
 
   ngOnInit() {
+
   }
 
     createForm() {
@@ -68,6 +78,8 @@ formErrors = {
       .subscribe(data => this.onValueChanged(data));
 
     this.onValueChanged();
+    this.formSubmitting = false;
+    this.showFeedbackform = true;
   }
   onValueChanged(data?: any) {
     if (!this.feedbackForm) { return; }
@@ -85,8 +97,31 @@ formErrors = {
     }
   }
    onSubmit() {
-    this.feedback = this.feedbackForm.value;
+   this.feedback = this.feedbackForm.value;
+    this.errMess = null;
     console.log(this.feedback);
+    this.formSubmitting = true;
+    this.showFeedbackform = false;  
+    this.feedbackService.submitFeedback(this.feedback)
+      .subscribe(
+        feedback => 
+        {
+          this.submittedFeedback = feedback;
+          this.formSubmitting = false;
+          setTimeout(() =>
+          { 
+            this.submittedFeedback = null;
+            this.showFeedbackform = true;  
+          }, 5000);
+        },
+        errmess => 
+        {
+          this.errMess = errmess;
+          this.formSubmitting = false;
+          this.showFeedbackform = true;  
+        }
+      );
+
     this.feedbackForm.reset({
       firstname: '',
       lastname: '',
